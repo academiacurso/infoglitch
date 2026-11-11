@@ -73,6 +73,107 @@ export function makeStackTemplate(
   };
 }
 
+/** Tipos de sección anchos por naturaleza: no entran bien en una columna angosta. */
+export const WIDE_SECTION_TYPES: SectionType[] = [
+  "title",
+  "steps",
+  "flow",
+  "architecture",
+  "versus",
+  "columns",
+];
+
+export interface ColumnsTemplateOptions {
+  /** cantidad de columnas (default 2). */
+  columns?: number;
+  /**
+   * Tipos que se renderizan a ancho completo **en su lugar** (vaciando las
+   * columnas): el resto fluye en N columnas. Default: `WIDE_SECTION_TYPES`.
+   */
+  fullWidthTypes?: SectionType[];
+  /** tipos a destacar primero (como en las plantillas de apilado). */
+  primary?: SectionType[];
+}
+
+/**
+ * Crea una plantilla de **layout multi-columna intercalado**: las secciones
+ * angostas fluyen en N columnas balanceando por altura (cada una va a la
+ * columna más corta), y las secciones anchas (`steps`, `flow`, `title`, …) se
+ * dibujan a ancho completo en su posición, vaciando las columnas antes y
+ * reanudándolas después. Un layout de verdad, distinto del apilado vertical,
+ * que nunca desborda una sección ancha en una columna angosta.
+ */
+export function makeColumnsTemplate(
+  id: string,
+  description: string,
+  options: ColumnsTemplateOptions = {},
+): Template {
+  const columns = Math.max(1, options.columns ?? 2);
+  const fullWidthTypes = new Set<SectionType>(options.fullWidthTypes ?? WIDE_SECTION_TYPES);
+
+  return {
+    id,
+    description,
+    primary: options.primary,
+    render(doc, theme, opts) {
+      const accents = themeAccents(theme);
+      const neon = theme.panelStyle === "neon";
+      const glow = neon && theme.glow ? "url(#ig-glow)" : undefined;
+      let accentIdx = 0;
+      const nextStyle = (type: SectionType): SectionStyle => {
+        const accent = accents[accentIdx % accents.length]!;
+        if (type !== "title" && type !== "callout") accentIdx++;
+        return { accent, neon, glow };
+      };
+
+      const ordered = prioritize(doc.sections, options.primary);
+      const colGap = GAP;
+      const colW = (opts.width - colGap * (columns - 1)) / columns;
+      const colX = Array.from({ length: columns }, (_, c) => opts.x + c * (colW + colGap));
+
+      let svg = "";
+      let cursor = opts.y; // borde inferior del contenido a ancho completo ya colocado
+      let placedAny = false;
+
+      // Estado de columnas activas (null = no hay tanda de columnas abierta).
+      let colY: number[] | null = null;
+      const flushColumns = (): void => {
+        if (colY) {
+          cursor = Math.max(cursor, ...colY);
+          colY = null;
+        }
+      };
+
+      for (const section of ordered) {
+        if (fullWidthTypes.has(section.type)) {
+          flushColumns();
+          if (placedAny) cursor += GAP;
+          const block = renderSection(section, theme, opts.x, cursor, opts.width, nextStyle(section.type));
+          svg += block.svg;
+          cursor += block.height;
+          placedAny = true;
+        } else {
+          if (!colY) {
+            if (placedAny) cursor += GAP;
+            colY = Array.from({ length: columns }, () => cursor);
+          }
+          // Columna más corta (ante empate, la primera).
+          let c = 0;
+          for (let k = 1; k < columns; k++) if (colY[k]! < colY[c]!) c = k;
+          if (colY[c]! > cursor) colY[c]! += GAP; // separar de la sección previa de ESA columna
+          const block = renderSection(section, theme, colX[c]!, colY[c]!, colW, nextStyle(section.type));
+          svg += block.svg;
+          colY[c]! += block.height;
+          placedAny = true;
+        }
+      }
+      flushColumns();
+
+      return { svg, height: cursor - opts.y };
+    },
+  };
+}
+
 const registry = new Map<string, Template>();
 
 export const FALLBACK_TEMPLATE = "feature-list";

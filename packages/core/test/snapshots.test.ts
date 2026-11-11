@@ -60,6 +60,46 @@ footer Hecho con infoglitch`;
   }
 });
 
+describe("plantillas de layout multi-columna", () => {
+  const doc = `section title
+  text Guía
+section stat
+  heading Métricas
+  - label Req/s
+    value 1200
+section list
+  heading Prácticas
+  - label Validá
+    tone pro
+section callout
+  text Nota
+section codeSnippet
+  heading Código
+  code const x = 1;
+section steps
+  heading Pipeline
+  - label Build
+  - label Test
+  - label Deploy`;
+
+  for (const tpl of ["two-column", "grid", "hero-split"]) {
+    it(`plantilla ${tpl} renderiza sin romper`, () => {
+      const svg = renderToString(`template ${tpl}\n${doc}`, { theme: "cyber", width: WIDTH });
+      expect(svg.startsWith("<svg")).toBe(true);
+      expect(svg).toContain("</svg>");
+      expect(svg).toMatchSnapshot();
+    });
+  }
+
+  it("una sección ancha (steps) va a ancho completo y no se recorta en columna", () => {
+    const svg = renderToString(`template grid\n${doc}`, { theme: "light-docs", width: WIDTH });
+    // El tercer paso (Deploy) debe estar presente (no omitido por overflow).
+    expect(svg).toContain("Deploy");
+    expect(svg).toContain("Build");
+    expect(svg).toContain("Test");
+  });
+});
+
 describe("accesibilidad", () => {
   it("incluye <title>/<desc> y aria-labelledby derivados del doc", () => {
     const svg = renderToString(

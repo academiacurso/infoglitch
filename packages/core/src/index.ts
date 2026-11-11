@@ -48,10 +48,11 @@ export {
   templateIds,
   templateCatalog,
   makeStackTemplate,
+  makeColumnsTemplate,
   stackSections,
   FALLBACK_TEMPLATE,
 } from "./render/registry.js";
-export type { Template, TemplateRenderOpts } from "./render/registry.js";
+export type { Template, TemplateRenderOpts, ColumnsTemplateOptions } from "./render/registry.js";
 export { builtinTemplates, registerBuiltinTemplates } from "./render/templates/index.js";
 
 // Temas
