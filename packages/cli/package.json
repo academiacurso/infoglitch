@@ -1,0 +1,43 @@
+{
+  "name": "@infoglitch/cli",
+  "version": "0.1.0",
+  "description": "CLI de infoglitch: renderiza un DSL/JSON a SVG, PNG o PDF desde la terminal. npx @infoglitch/cli render deck.dsl -o out.png",
+  "license": "MIT",
+  "author": "Duglas Moreno",
+  "repository": { "type": "git", "url": "git+https://github.com/academiacurso/infoglitch.git", "directory": "packages/cli" },
+  "homepage": "https://github.com/academiacurso/infoglitch/tree/master/packages/cli#readme",
+  "bugs": "https://github.com/academiacurso/infoglitch/issues",
+  "type": "module",
+  "bin": { "infoglitch": "./dist/cli.js" },
+  "files": ["dist"],
+  "keywords": ["infographic", "svg", "png", "pdf", "cli", "dsl", "infoglitch"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@infoglitch/core": "workspace:*",
+    "@infoglitch/export": "workspace:*",
+    "@infoglitch/fonts": "workspace:*",
+    "@infoglitch/icons": "workspace:*"
+  },
+  "optionalDependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.6",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

@@ -1,4 +1,10 @@
-import { makeStackTemplate, registerTemplate, type Template } from "../registry.js";
+import {
+  makeColumnsTemplate,
+  makeStackTemplate,
+  registerTemplate,
+  WIDE_SECTION_TYPES,
+  type Template,
+} from "../registry.js";
 
 /**
  * Catálogo de plantillas del MVP, enfocado en temática de programación.
@@ -44,6 +50,20 @@ export const builtinTemplates: Template[] = [
     "iconGrid",
   ]),
   makeStackTemplate("chart", "Gráfico de datos (barras, torta/dona, líneas)", ["title", "chart"]),
+
+  // Layouts multi-columna intercalados (balancean por altura; las secciones
+  // anchas van full-width en su lugar) — no solo apilado vertical.
+  makeColumnsTemplate("two-column", "Revista a dos columnas: lo angosto balanceado, lo ancho a todo el ancho", {
+    columns: 2,
+  }),
+  makeColumnsTemplate("grid", "Grilla de 3 columnas para muchas secciones chicas (stats, iconos, notas)", {
+    columns: 3,
+  }),
+  makeColumnsTemplate("hero-split", "Hero a ancho completo (título + callout) y el resto en 2 columnas", {
+    columns: 2,
+    fullWidthTypes: [...WIDE_SECTION_TYPES, "callout"],
+    primary: ["title", "callout"],
+  }),
 ];
 
 let registered = false;

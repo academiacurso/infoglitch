@@ -3,7 +3,7 @@ import { parseDsl } from "../dsl/parser.js";
 import { getTheme, type Theme } from "../theme/index.js";
 import { getTemplate } from "./registry.js";
 import { registerBuiltinTemplates } from "./templates/index.js";
-import { icon, rect, text, wrapText } from "./svg.js";
+import { escapeXml, icon, rect, text, wrapText } from "./svg.js";
 
 registerBuiltinTemplates();
 
@@ -47,6 +47,40 @@ function buildDefs(theme: Theme, width: number): string {
   }
 
   return defs; // contenido interno de <defs> (sin envolver)
+}
+
+/** Recolecta textos legibles (headings/títulos) de las secciones, incluidas las anidadas. */
+function collectHeadings(sections: unknown[], out: string[]): void {
+  for (const s of sections) {
+    if (!s || typeof s !== "object") continue;
+    const sec = s as Record<string, unknown>;
+    if (typeof sec.heading === "string" && sec.heading.trim()) out.push(sec.heading.trim());
+    else if (typeof sec.text === "string" && sec.text.trim()) out.push(sec.text.trim());
+    // columns: secciones anidadas por columna
+    if (Array.isArray(sec.columns)) {
+      for (const col of sec.columns) {
+        const nested = (col as Record<string, unknown>)?.sections;
+        if (Array.isArray(nested)) collectHeadings(nested, out);
+      }
+    }
+  }
+}
+
+/**
+ * Deriva el nombre accesible (`aria-label`) y la descripción larga (`<desc>`) del documento,
+ * para que lectores de pantalla anuncien algo útil en vez de "imagen".
+ */
+function buildA11y(doc: InfographicDoc): { label: string; desc: string } {
+  const headings: string[] = [];
+  collectHeadings(doc.sections ?? [], headings);
+  const label = (doc.title?.trim() || headings[0] || "Infografía").slice(0, 120);
+  const parts: string[] = [];
+  if (doc.title?.trim()) parts.push(doc.title.trim());
+  const rest = headings.filter((h) => h !== doc.title?.trim());
+  if (rest.length) parts.push(`Secciones: ${rest.join("; ")}`);
+  if (doc.footer?.text?.trim()) parts.push(doc.footer.text.trim());
+  const desc = parts.join(". ").slice(0, 600) || label;
+  return { label, desc };
 }
 
 export interface RenderOptions {
@@ -147,10 +181,17 @@ export function renderToString(input: string | InfographicDoc | unknown, opts: R
     fill: theme.backgroundGradient ? "url(#ig-bg)" : theme.background,
   });
 
+  const a11y = buildA11y(doc);
+  const a11yNodes =
+    `<title id="ig-title-a11y">${escapeXml(a11y.label)}</title>` +
+    `<desc id="ig-desc-a11y">${escapeXml(a11y.desc)}</desc>`;
+
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
     `width="${width}" height="${height}" ` +
-    `viewBox="0 0 ${width} ${height}" font-family="${theme.fontFamily}" role="img">` +
+    `viewBox="0 0 ${width} ${height}" font-family="${theme.fontFamily}" ` +
+    `role="img" aria-labelledby="ig-title-a11y ig-desc-a11y">` +
+    a11yNodes +
     defs +
     background +
     header +

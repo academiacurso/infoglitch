@@ -17,10 +17,15 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "require": "./dist/node.cjs"
     }
   },
   "files": ["dist"],
-  "keywords": ["infographic", "svg", "png", "pdf", "export", "infoglitch"],
+  "keywords": ["infographic", "svg", "png", "pdf", "export", "resvg", "infoglitch"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -34,6 +39,9 @@
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
+  },
+  "optionalDependencies": {
+    "@resvg/resvg-js": "^2.6.2"
   },
   "publishConfig": {
     "access": "public",

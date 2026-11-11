@@ -1,7 +1,8 @@
 import { resolveIcon } from "../icons/index.js";
 
-/** Escapa texto para contenido/atributos XML. */
+/** Escapa texto para contenido/atributos XML. Tolerante: coacciona no-strings a "". */
 export function escapeXml(value: string): string {
+  if (typeof value !== "string") return value == null ? "" : String(value);
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

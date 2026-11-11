@@ -232,6 +232,49 @@ export const chartSectionSchema = z.object({
     .min(1),
 });
 
+/** Cita / testimonio destacado, con autor opcional. */
+export const quoteSectionSchema = z.object({
+  type: z.literal("quote"),
+  text: z.string().min(1),
+  author: z.string().optional(),
+  role: z.string().optional(),
+  icon: iconRef.optional(),
+});
+
+/** Métrica estrella: un número grande con etiqueta y variación opcional. */
+export const kpiSectionSchema = z.object({
+  type: z.literal("kpi"),
+  value: z.string().min(1).describe("Valor grande, ej. '99.9%', '1.2M', '35ms'."),
+  label: z.string().optional(),
+  delta: z.string().optional().describe("Variación, ej. '+12%'."),
+  trend: z.enum(["up", "down", "flat"]).default("flat"),
+  icon: iconRef.optional(),
+});
+
+/** Tabla simple: encabezados + filas de celdas. */
+export const tableSectionSchema = z.object({
+  type: z.literal("table"),
+  heading: z.string().optional(),
+  columns: z.array(z.string()).min(1),
+  rows: z.array(z.array(z.string())).min(1),
+});
+
+/** Barras de progreso / porcentaje (skill bars 0–100). */
+export const progressSectionSchema = z.object({
+  type: z.literal("progress"),
+  heading: z.string().optional(),
+  unit: z.string().default("%"),
+  items: z
+    .array(
+      z.object({
+        label: z.string().min(1),
+        value: z.number().min(0).max(100),
+        icon: iconRef.optional(),
+      }),
+    )
+    .min(1),
+});
+
 /** Secciones "hoja" (todo menos `columns`): lo que puede ir dentro de una columna. */
 export const leafSectionSchema = z.discriminatedUnion("type", [
   titleSectionSchema,
@@ -248,6 +291,10 @@ export const leafSectionSchema = z.discriminatedUnion("type", [
   roadmapSectionSchema,
   iconGridSectionSchema,
   chartSectionSchema,
+  quoteSectionSchema,
+  kpiSectionSchema,
+  tableSectionSchema,
+  progressSectionSchema,
 ]);
 
 /** Layout en columnas: coloca varias columnas (cada una una pila) lado a lado. */
@@ -276,6 +323,10 @@ export const sectionSchema = z.discriminatedUnion("type", [
   roadmapSectionSchema,
   iconGridSectionSchema,
   chartSectionSchema,
+  quoteSectionSchema,
+  kpiSectionSchema,
+  tableSectionSchema,
+  progressSectionSchema,
   columnsSectionSchema,
 ]);
 
@@ -311,6 +362,10 @@ export type FlowSection = z.infer<typeof flowSectionSchema>;
 export type RoadmapSection = z.infer<typeof roadmapSectionSchema>;
 export type IconGridSection = z.infer<typeof iconGridSectionSchema>;
 export type ChartSection = z.infer<typeof chartSectionSchema>;
+export type QuoteSection = z.infer<typeof quoteSectionSchema>;
+export type KpiSection = z.infer<typeof kpiSectionSchema>;
+export type TableSection = z.infer<typeof tableSectionSchema>;
+export type ProgressSection = z.infer<typeof progressSectionSchema>;
 export type ColumnsSection = z.infer<typeof columnsSectionSchema>;
 export type LeafSection = z.infer<typeof leafSectionSchema>;
 export type Footer = z.infer<typeof footerSchema>;

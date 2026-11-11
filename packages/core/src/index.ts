@@ -48,10 +48,11 @@ export {
   templateIds,
   templateCatalog,
   makeStackTemplate,
+  makeColumnsTemplate,
   stackSections,
   FALLBACK_TEMPLATE,
 } from "./render/registry.js";
-export type { Template, TemplateRenderOpts } from "./render/registry.js";
+export type { Template, TemplateRenderOpts, ColumnsTemplateOptions } from "./render/registry.js";
 export { builtinTemplates, registerBuiltinTemplates } from "./render/templates/index.js";
 
 // Temas
@@ -65,10 +66,17 @@ export {
   neonNight,
   blueprint,
   cyber,
+  forest,
+  sunset,
+  paper,
+  frost,
+  solar,
   codePalette,
   themeAccents,
+  defineTheme,
+  registerTheme,
 } from "./theme/index.js";
-export type { Theme, CodePalette, BackgroundGradient } from "./theme/index.js";
+export type { Theme, CodePalette, BackgroundGradient, ThemeInput } from "./theme/index.js";
 
 // Iconos
 export {
