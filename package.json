@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "description": "Framework para generar y renderizar infografías del ámbito de la programación, con IA opcional",
-  "repository": { "type": "git", "url": "git+https://github.com/academiacurso/infoglitch.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/academiacurso/infoglitch.git"
+  },
   "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@12.18.0",

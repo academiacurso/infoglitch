@@ -2,5 +2,5 @@ packages:
   - "packages/*"
   - "examples/node-cli"
 
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  esbuild: true
