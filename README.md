@@ -16,10 +16,13 @@ arquitecturas, benchmarks, comparativas de stacks, roadmaps, snippets…).
 
 | Paquete | Qué hace |
 |---|---|
-| [`@infoglitch/core`](packages/core) | Modelo de documento (zod), DSL textual tolerante, renderer SVG, plantillas, temas e iconos. Sin dependencias de IA ni de red. |
+| [`@infoglitch/core`](packages/core) | Modelo de documento (zod), DSL textual tolerante, renderer SVG, plantillas, temas (`defineTheme`/`registerTheme`) e iconos. Sin dependencias de IA ni de red. |
 | [`@infoglitch/ai`](packages/ai) | Adapter de Anthropic (server-side, BYO key): prompt → documento/infografía. Streaming incluido. |
+| [`@infoglitch/cli`](packages/cli) | **CLI**: `npx @infoglitch/cli render deck.dsl -o out.png`. Renderiza DSL/JSON a SVG/PNG/PDF desde la terminal. |
 | [`@infoglitch/react`](packages/react) | Componente `<Infographic/>` y hook `useStreamingInfographic`. |
-| [`@infoglitch/export`](packages/export) | Exporta el SVG a **PNG** y **PDF** en el navegador (sin dependencias). |
+| [`@infoglitch/vue`](packages/vue) | Componente Vue 3 `<Infographic/>` y composable `useStreamingInfographic`. |
+| [`@infoglitch/svelte`](packages/svelte) | Componente Svelte `<Infographic/>` (compatible 4 y 5). |
+| [`@infoglitch/export`](packages/export) | Exporta el SVG a **PNG** y **PDF**: en el navegador (sin deps) y server-side con `@infoglitch/export/node` (resvg). |
 | [`@infoglitch/icons`](packages/icons) | Logos de lenguajes y herramientas (**Simple Icons**, CC0) como fuente de iconos. |
 | [`@infoglitch/fonts`](packages/fonts) | Inter + JetBrains Mono (OFL) embebibles para que PNG/PDF se vean igual en todos lados. |
 

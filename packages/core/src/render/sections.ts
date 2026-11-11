@@ -422,15 +422,17 @@ function renderTimeline(s: TimelineSection, theme: Theme, x: number, y: number, 
       family: theme.fontFamily,
       maxLines: 2,
     });
-    const dateSvg = text({
-      x: railX + 28,
-      y: cy + labelP.height + 8,
-      text: item.date,
-      size: 12,
-      weight: 700,
-      fill: style.accent,
-      family: theme.monoFamily,
-    });
+    const dateSvg = item.date
+      ? text({
+          x: railX + 28,
+          y: cy + labelP.height + 8,
+          text: item.date,
+          size: 12,
+          weight: 700,
+          fill: style.accent,
+          family: theme.monoFamily,
+        })
+      : "";
     let descBlock: Block = { svg: "", height: 0 };
     if (item.desc) {
       descBlock = paragraph({

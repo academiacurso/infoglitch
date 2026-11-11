@@ -216,3 +216,45 @@ export function codePalette(theme: Theme): CodePalette {
 export function themeAccents(theme: Theme): string[] {
   return theme.accents && theme.accents.length ? theme.accents : [theme.accent];
 }
+
+/** Entrada para `defineTheme`: id obligatorio, `extends` opcional, y overrides parciales. */
+export type ThemeInput = Partial<Theme> & {
+  id: string;
+  /** Tema base a extender (id registrado o un `Theme`). Default: `dark-terminal`. */
+  extends?: string | Theme;
+};
+
+/**
+ * Crea un `Theme` completo a partir de uno base + overrides. No lo registra.
+ *
+ *   const brand = defineTheme({
+ *     id: "mi-marca", extends: "cyber",
+ *     accent: "#f5b31e", titleGradient: ["#2d5a34", "#4e8c56"],
+ *   });
+ */
+export function defineTheme(input: ThemeInput): Theme {
+  const base =
+    input.extends === undefined
+      ? darkTerminal
+      : typeof input.extends === "string"
+        ? getTheme(input.extends)
+        : input.extends;
+  const { extends: _ignored, ...overrides } = input;
+  return { ...base, ...overrides, id: input.id };
+}
+
+/**
+ * Registra un tema para que `getTheme(id)` y el renderer lo encuentren por id.
+ * Acepta un `Theme` ya armado o un `ThemeInput` (lo pasa por `defineTheme`).
+ * Devuelve el tema registrado.
+ *
+ *   registerTheme({ id: "mi-marca", extends: "cyber", accent: "#f5b31e" });
+ *   renderToString(dsl, { theme: "mi-marca" });
+ */
+export function registerTheme(theme: Theme | ThemeInput): Theme {
+  const full = "background" in theme && "accent" in theme && !("extends" in theme)
+    ? (theme as Theme)
+    : defineTheme(theme as ThemeInput);
+  themes[full.id] = full;
+  return full;
+}

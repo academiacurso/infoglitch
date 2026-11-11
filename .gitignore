@@ -153,3 +153,6 @@ docs/
 
 # bundle standalone generado (tsup.standalone.config)
 standalone/
+
+# sitio deployable (se mantiene fuera del repo; se deploya aparte)
+site/

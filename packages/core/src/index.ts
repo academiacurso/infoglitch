@@ -67,8 +67,10 @@ export {
   cyber,
   codePalette,
   themeAccents,
+  defineTheme,
+  registerTheme,
 } from "./theme/index.js";
-export type { Theme, CodePalette, BackgroundGradient } from "./theme/index.js";
+export type { Theme, CodePalette, BackgroundGradient, ThemeInput } from "./theme/index.js";
 
 // Iconos
 export {
