@@ -7,11 +7,15 @@ import type {
   ComparisonSection,
   FlowSection,
   IconGridSection,
+  KpiSection,
   ListSection,
+  ProgressSection,
+  QuoteSection,
   RoadmapSection,
   Section,
   StatSection,
   StepsSection,
+  TableSection,
   TimelineSection,
   TitleSection,
   VersusSection,
@@ -925,6 +929,143 @@ function renderChart(s: ChartSection, theme: Theme, x: number, y: number, w: num
 }
 
 /* ------------------------------ dispatch -------------------------------- */
+/* ------------------------------- quote ---------------------------------- */
+function renderQuote(s: QuoteSection, theme: Theme, x: number, y: number, w: number, style: SectionStyle): Block {
+  const padX = 28;
+  const textX = x + padX + 44;
+  const maxW = w - padX * 2 - 44;
+  const mark = text({ x: x + padX, y: y + 62, text: "“", size: 64, weight: 800, fill: style.accent, family: theme.fontFamily });
+  const body = paragraph({
+    x: textX,
+    y: y + 44,
+    text: s.text,
+    maxWidth: maxW,
+    size: 20,
+    weight: 600,
+    fill: theme.text,
+    family: theme.fontFamily,
+    maxLines: 6,
+  });
+  let authorSvg = "";
+  let authorH = 0;
+  if (s.author) {
+    const authorY = y + 44 + body.height + 28;
+    authorSvg = text({
+      x: textX,
+      y: authorY,
+      text: `— ${s.author}${s.role ? `, ${s.role}` : ""}`,
+      size: 14,
+      weight: 700,
+      fill: style.accent,
+      family: theme.fontFamily,
+    });
+    authorH = 30;
+  }
+  const h = Math.max(104, 44 + body.height + authorH + 20);
+  const accentBar = rect({ x, y, width: 6, height: h, fill: style.accent });
+  return { svg: card(x, y, w, h, theme, style) + accentBar + mark + body.svg + authorSvg, height: h };
+}
+
+/* -------------------------------- kpi ----------------------------------- */
+function renderKpi(s: KpiSection, theme: Theme, x: number, y: number, w: number, style: SectionStyle): Block {
+  const h = 150;
+  const padX = 28;
+  let parts = card(x, y, w, h, theme, style, true);
+  if (s.icon) parts += icon(s.icon, x + padX, y + 24, 30, style.accent);
+  parts += text({
+    x: x + padX,
+    y: y + 92,
+    text: s.value,
+    size: 54,
+    weight: 800,
+    fill: theme.titleGradient ? "url(#ig-title)" : style.accent,
+    family: theme.monoFamily,
+  });
+  if (s.label) {
+    parts += text({ x: x + padX, y: y + 122, text: s.label, size: 15, fill: theme.textMuted, family: theme.fontFamily });
+  }
+  if (s.delta) {
+    const color = s.trend === "up" ? theme.accent2 : s.trend === "down" ? "#f85149" : theme.textMuted;
+    const chipW = Math.max(52, s.delta.length * 9 + 24);
+    const chipX = x + w - padX - chipW;
+    parts += el("rect", { x: chipX, y: y + 24, width: chipW, height: 28, rx: 14, fill: color, opacity: 0.18 });
+    parts += text({
+      x: chipX + chipW / 2,
+      y: y + 43,
+      text: s.delta,
+      size: 13,
+      weight: 700,
+      fill: color,
+      anchor: "middle",
+      family: theme.fontFamily,
+    });
+  }
+  return { svg: parts, height: h };
+}
+
+/* ------------------------------- table ---------------------------------- */
+function renderTable(s: TableSection, theme: Theme, x: number, y: number, w: number, style: SectionStyle): Block {
+  const head = heading(s, x, y, theme, style);
+  const top = y + head.height;
+  const nCols = Math.max(1, s.columns.length);
+  const colW = w / nCols;
+  const headH = 42;
+  const rowH = 38;
+  const totalH = headH + s.rows.length * rowH;
+
+  let parts = head.svg;
+  parts += rect({ x, y: top, width: w, height: totalH, rx: theme.radius, fill: theme.surface });
+  parts += rect({ x, y: top, width: w, height: headH, fill: theme.surfaceAlt });
+  s.columns.forEach((c, i) => {
+    parts += text({ x: x + i * colW + 14, y: top + 27, text: c, size: 14, weight: 700, fill: style.accent, family: theme.fontFamily });
+  });
+  let cy = top + headH;
+  s.rows.forEach((row, r) => {
+    if (r % 2 === 1) parts += el("rect", { x, y: cy, width: w, height: rowH, fill: theme.surfaceAlt, opacity: 0.5 });
+    for (let i = 0; i < nCols; i++) {
+      const cell = row[i] ?? "";
+      if (cell) parts += text({ x: x + i * colW + 14, y: cy + 24, text: cell, size: 13, fill: theme.text, family: theme.fontFamily });
+    }
+    cy += rowH;
+  });
+  parts += el("rect", { x, y: top, width: w, height: totalH, rx: theme.radius, fill: "none", stroke: theme.border, "stroke-width": 1 });
+  return { svg: parts, height: head.height + totalH };
+}
+
+/* ------------------------------ progress -------------------------------- */
+function renderProgress(s: ProgressSection, theme: Theme, x: number, y: number, w: number, style: SectionStyle): Block {
+  const head = heading(s, x, y, theme, style);
+  const top = y + head.height;
+  const accents = themeAccents(theme);
+  const rowH = 46;
+  const barH = 12;
+  const unit = s.unit ?? "%";
+  let cy = top;
+  let parts = head.svg;
+  void style;
+  s.items.forEach((it, i) => {
+    const color = accents[i % accents.length]!;
+    const pct = Math.max(0, Math.min(100, it.value));
+    parts += text({ x, y: cy + 14, text: it.label, size: 14, weight: 600, fill: theme.text, family: theme.fontFamily });
+    parts += text({
+      x: x + w,
+      y: cy + 14,
+      text: `${pct}${unit}`,
+      size: 13,
+      weight: 700,
+      fill: color,
+      anchor: "end",
+      family: theme.monoFamily,
+    });
+    const barY = cy + 24;
+    parts += rect({ x, y: barY, width: w, height: barH, rx: barH / 2, fill: theme.surfaceAlt });
+    const fillW = Math.max(barH, (w * pct) / 100);
+    parts += rect({ x, y: barY, width: fillW, height: barH, rx: barH / 2, fill: color });
+    cy += rowH;
+  });
+  return { svg: parts, height: head.height + s.items.length * rowH };
+}
+
 export function renderSection(
   section: Section,
   theme: Theme,
@@ -962,6 +1103,14 @@ export function renderSection(
       return renderIconGrid(section, theme, x, y, w, style);
     case "chart":
       return renderChart(section, theme, x, y, w, style);
+    case "quote":
+      return renderQuote(section, theme, x, y, w, style);
+    case "kpi":
+      return renderKpi(section, theme, x, y, w, style);
+    case "table":
+      return renderTable(section, theme, x, y, w, style);
+    case "progress":
+      return renderProgress(section, theme, x, y, w, style);
     case "columns":
       return renderColumns(section, theme, x, y, w, style);
     default: {

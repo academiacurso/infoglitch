@@ -25,7 +25,7 @@ const VERSION: string = (() => {
 const SECTION_TYPES = [
   "title", "steps", "comparison", "stat", "codeSnippet", "architecture",
   "timeline", "list", "callout", "versus", "flow", "roadmap", "iconGrid",
-  "chart", "columns",
+  "chart", "quote", "kpi", "table", "progress", "columns",
 ];
 
 export type Format = "svg" | "png" | "pdf";

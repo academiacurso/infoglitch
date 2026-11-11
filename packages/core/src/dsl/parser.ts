@@ -35,6 +35,10 @@ const KNOWN_TYPES = new Set<SectionType>([
   "iconGrid",
   "columns",
   "chart",
+  "quote",
+  "kpi",
+  "table",
+  "progress",
 ]);
 
 const FLOW_KINDS = new Set(["start", "process", "decision", "end"]);
@@ -77,6 +81,17 @@ const TYPE_ALIASES: Record<string, SectionType> = {
   chart: "chart",
   grafico: "chart",
   grafica: "chart",
+  quote: "quote",
+  cita: "quote",
+  testimonial: "quote",
+  kpi: "kpi",
+  metric: "kpi",
+  bignumber: "kpi",
+  table: "table",
+  tabla: "table",
+  progress: "progress",
+  progreso: "progress",
+  bars: "progress",
 };
 
 interface RawSection {
@@ -102,6 +117,12 @@ function newSection(type: SectionType): RawSection {
       return { type, columns: [] };
     case "chart":
       return { type, chart: "bar", items: [] };
+    case "quote":
+      return { type, text: "" };
+    case "kpi":
+      return { type, value: "", trend: "flat" };
+    case "table":
+      return { type, columns: [], rows: [] };
     default:
       return { type, items: [] };
   }
@@ -149,8 +170,29 @@ function setSectionField(section: RawSection, key: string, value: string): void 
       else if (key === "rightcolor") right.color = value;
       break;
     }
+    case "quote":
+      if (key === "text" || key === "quote") section.text = value;
+      else if (key === "author" || key === "by") section.author = value;
+      else if (key === "role") section.role = value;
+      else if (key === "icon") section.icon = value;
+      break;
+    case "kpi":
+      if (key === "value") section.value = value;
+      else if (key === "label") section.label = value;
+      else if (key === "delta" || key === "change") section.delta = value;
+      else if (key === "trend") section.trend = value;
+      else if (key === "icon") section.icon = value;
+      break;
+    case "table": {
+      const cells = (v: string): string[] => v.split("|").map((c) => c.trim());
+      if (key === "heading") section.heading = value;
+      else if (key === "cols" || key === "columns" || key === "header") section.columns = cells(value);
+      else if (key === "row") (section.rows as string[][]).push(cells(value));
+      break;
+    }
     default:
       if (key === "heading") section.heading = value;
+      else if (key === "unit" && section.type === "progress") section.unit = value;
       else if (key === "columns" && section.type === "iconGrid") {
         const num = Number(value);
         if (Number.isFinite(num)) section.columns = num;
@@ -257,6 +299,11 @@ function applyItemField(
     else if (key === "value") item.value = Number(value);
     return;
   }
+  if (type === "progress") {
+    if (key === "label" || key === "icon") item[key] = value;
+    else if (key === "value") item.value = Number(String(value).replace("%", ""));
+    return;
+  }
   // steps/stat/list/timeline
   const allowed = ["label", "desc", "icon", "tone", "value", "unit", "date"];
   if (allowed.includes(key)) item[key] = value;
@@ -292,6 +339,19 @@ function sanitize(sections: RawSection[]): Section[] {
         .filter((c) => c.sections.length >= 1);
       if (cols.length >= 2) out.push({ ...s, columns: cols });
     } else if (s.type === "chart") {
+      const items = (s.items as Record<string, unknown>[]).filter(
+        (it) => it.label && Number.isFinite(it.value as number),
+      );
+      if (items.length >= 1) out.push({ ...s, items });
+    } else if (s.type === "quote") {
+      if (s.text) out.push(s);
+    } else if (s.type === "kpi") {
+      if (s.value) out.push(s);
+    } else if (s.type === "table") {
+      const cols = (s.columns as string[]).filter(Boolean);
+      const rows = (s.rows as string[][]).filter((r) => r.some((c) => c));
+      if (cols.length >= 1 && rows.length >= 1) out.push({ ...s, columns: cols, rows });
+    } else if (s.type === "progress") {
       const items = (s.items as Record<string, unknown>[]).filter(
         (it) => it.label && Number.isFinite(it.value as number),
       );
@@ -537,6 +597,34 @@ function emitSectionBody(s: Section, p: string): string {
             ["label", it.label],
             ["value", it.value],
             ["color", it.color],
+          ]);
+        break;
+      case "quote":
+        out += `${p}text ${s.text}\n`;
+        if (s.author) out += `${p}author ${s.author}\n`;
+        if (s.role) out += `${p}role ${s.role}\n`;
+        if (s.icon) out += `${p}icon ${s.icon}\n`;
+        break;
+      case "kpi":
+        out += `${p}value ${s.value}\n`;
+        if (s.label) out += `${p}label ${s.label}\n`;
+        if (s.delta) out += `${p}delta ${s.delta}\n`;
+        if (s.trend && s.trend !== "flat") out += `${p}trend ${s.trend}\n`;
+        if (s.icon) out += `${p}icon ${s.icon}\n`;
+        break;
+      case "table":
+        if (s.heading) out += `${p}heading ${s.heading}\n`;
+        out += `${p}cols ${s.columns.join(" | ")}\n`;
+        for (const row of s.rows) out += `${p}row ${row.join(" | ")}\n`;
+        break;
+      case "progress":
+        if (s.heading) out += `${p}heading ${s.heading}\n`;
+        if (s.unit && s.unit !== "%") out += `${p}unit ${s.unit}\n`;
+        for (const it of s.items)
+          out += emitItem(p, [
+            ["label", it.label],
+            ["value", it.value],
+            ["icon", it.icon],
           ]);
         break;
       case "columns":

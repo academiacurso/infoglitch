@@ -25,6 +25,10 @@ const SECTION_DSL: Record<string, string> = {
   roadmap: `template stack\nsection roadmap\n  - label Fase 1\n    point A\n    point B\n  - label Fase 2\n    point C`,
   iconGrid: `template stack\nsection iconGrid\n  heading Stack\n  columns 3\n  - icon python\n    label Python\n  - icon react\n    label React`,
   chart: `template stack\nsection chart\n  chart bar\n  heading Datos\n  - label A\n    value 30\n  - label B\n    value 70`,
+  quote: `template stack\nsection quote\n  text El mejor código es el que no tenés que escribir\n  author Jeff Atwood\n  role cofundador`,
+  kpi: `template stack\nsection kpi\n  value 99.9%\n  label Uptime\n  delta +0.4%\n  trend up`,
+  table: `template stack\nsection table\n  heading Comparativa\n  cols Lenguaje | Tipado\n  row Python | Dinámico\n  row Rust | Estático`,
+  progress: `template stack\nsection progress\n  heading Cobertura\n  - label Tests\n    value 82\n  - label Docs\n    value 45`,
   columns: `template stack\nsection columns\n  ratio 1 1\n  col\n    section callout\n      text Izquierda\n  col\n    section callout\n      text Derecha`,
 };
 

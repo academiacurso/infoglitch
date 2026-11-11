@@ -81,6 +81,7 @@ export const WIDE_SECTION_TYPES: SectionType[] = [
   "architecture",
   "versus",
   "columns",
+  "table",
 ];
 
 export interface ColumnsTemplateOptions {
