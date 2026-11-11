@@ -1,8 +1,15 @@
 # infoglitch
 
+[![npm](https://img.shields.io/npm/v/@infoglitch/core?color=4e8c56&label=%40infoglitch%2Fcore)](https://www.npmjs.com/package/@infoglitch/core)
+[![CI](https://github.com/academiacurso/infoglitch/actions/workflows/ci.yml/badge.svg)](https://github.com/academiacurso/infoglitch/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-MIT-f5b31e)](LICENSE)
+[![demo](https://img.shields.io/badge/demo-infoglitch.duglasm.com-2d5a34)](https://infoglitch.duglasm.com/)
+
 Framework para **generar y renderizar infografías del ámbito de la programación**, con
 IA opcional. Inspirado en `@antv/infographic`, pero enfocado en temática dev (pipelines,
 arquitecturas, benchmarks, comparativas de stacks, roadmaps, snippets…).
+
+**19 tipos de sección · 17 plantillas de layout · 11 temas · exporta a SVG/PNG/PDF · CLI · React/Vue/Svelte.**
 
 > El **JSON es la fuente de verdad** y genera el SVG por sí solo. La IA es un productor
 > **opcional** de ese JSON.
@@ -129,14 +136,28 @@ try {
 }
 ```
 
-## React
+## React / Vue / Svelte
 
 ```tsx
-import { Infographic } from "@infoglitch/react";
+import { Infographic } from "@infoglitch/react";   // o @infoglitch/vue, @infoglitch/svelte
 
 <Infographic doc={doc} width={960} />;      // desde JSON
 <Infographic source={dslString} />;         // desde DSL (streaming)
 ```
+
+## Desde la terminal (CLI)
+
+Sin escribir código: `@infoglitch/cli` renderiza un DSL/JSON a SVG/PNG/PDF.
+
+```bash
+npx @infoglitch/cli init                              # crea deck.dsl de ejemplo
+npx @infoglitch/cli render deck.dsl -o deck.png --theme cyber --width 1200
+npx @infoglitch/cli render deck.dsl -o deck.svg --watch   # re-render al guardar
+cat deck.dsl | npx @infoglitch/cli render - -f pdf > deck.pdf
+```
+
+PNG/PDF server-side también disponibles por API con `@infoglitch/export/node`
+(`renderPng`/`renderPdf`, con fuentes embebidas vía `fontBuffers`).
 
 ## Iconos de lenguajes (logos)
 
@@ -216,21 +237,27 @@ const blob = await svgToPngBlob(svg); // si preferís manejar el Blob vos
 
 ## Plantillas
 
-`pipeline-steps`, `architecture-boxes`, `stack-comparison`, `metrics-grid`,
-`code-callout`, `timeline-roadmap`, `feature-list`, `concept-hero`, `versus`
-(comparación A vs B con columna central y pro/con), `flowchart` (diagrama de flujo
-con decisiones Sí/No), `roadmap` (ruta serpenteante numerada), `icon-grid` (grilla de
-icono + concepto) y `chart` (gráficos). Extensibles con `registerTemplate()`.
+De apilado: `stack`, `pipeline-steps`, `architecture-boxes`, `stack-comparison`,
+`metrics-grid`, `code-callout`, `timeline-roadmap`, `feature-list`, `concept-hero`,
+`versus`, `flowchart`, `roadmap`, `icon-grid`, `chart`. Y de **layout multi-columna**
+(balancean por altura; lo ancho va full-width en su lugar): **`two-column`**, **`grid`**
+(3 columnas) y **`hero-split`**. Extensibles con `registerTemplate()` / `makeColumnsTemplate()`.
 
-Tipos de sección: `title`, `steps`, `comparison`, `stat`, `codeSnippet` (con syntax
+Tipos de sección (19): `title`, `steps`, `comparison`, `stat`, `codeSnippet` (con syntax
 highlighting), `architecture`, `timeline`, `list`, `callout`, `versus`, `flow`, `roadmap`,
-`iconGrid`, `chart` (barras/torta/dona/líneas), y `columns` (layout lado a lado, ej. 50/50).
+`iconGrid`, `chart` (barras/torta/dona/líneas), `quote` (cita/testimonio), `kpi` (número
+grande con delta), `table` (tabla), `progress` (barras de %) y `columns` (layout lado a lado).
+
+**Estilo inline por DSL:** `accent <color>` en cualquier sección sobrescribe su acento
+sin registrar un tema.
 
 ## Temas
 
-`dark-terminal`, `light-docs`, `glitch`, y los estilo póster **`neon-night`**,
-**`blueprint`** y **`cyber`** (fondo con gradiente, glow neón, acento por sección y
-título con degradé). El tema controla también la paleta de resaltado de código.
+11 temas: `dark-terminal`, `light-docs`, `glitch`, `neon-night`, `blueprint`, `cyber`,
+y **`forest`** (verde/dorado), **`sunset`** (cálido), **`paper`** (claro minimalista),
+**`frost`** (nórdico) y **`solar`** (teal). Fondo con gradiente, glow neón, acento por
+sección y degradé de título. Creá el tuyo con `defineTheme()` / `registerTheme()`. El
+tema controla también la paleta de resaltado de código.
 
 ## Desarrollo
 
