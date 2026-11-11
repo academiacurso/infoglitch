@@ -1,0 +1,4 @@
+Inter: SIL Open Font License 1.1 — https://github.com/rsms/inter
+JetBrains Mono: SIL Open Font License 1.1 — https://github.com/JetBrains/JetBrainsMono
+
+Full license: https://openfontlicense.org/

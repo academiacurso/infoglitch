@@ -1,2 +1,262 @@
 # infoglitch
-Proyecto para npmjs para crear infografias en el area informatica
+
+Framework para **generar y renderizar infografías del ámbito de la programación**, con
+IA opcional. Inspirado en `@antv/infographic`, pero enfocado en temática dev (pipelines,
+arquitecturas, benchmarks, comparativas de stacks, roadmaps, snippets…).
+
+> El **JSON es la fuente de verdad** y genera el SVG por sí solo. La IA es un productor
+> **opcional** de ese JSON.
+
+```
+  Camino A (sin IA):  InfographicDoc (JSON) ──► renderToString() ──► SVG
+  Camino B (con IA):  prompt ──► @infoglitch/ai ──► JSON ──► (Camino A) ──► SVG
+```
+
+## Paquetes
+
+| Paquete | Qué hace |
+|---|---|
+| [`@infoglitch/core`](packages/core) | Modelo de documento (zod), DSL textual tolerante, renderer SVG, plantillas, temas e iconos. Sin dependencias de IA ni de red. |
+| [`@infoglitch/ai`](packages/ai) | Adapter de Anthropic (server-side, BYO key): prompt → documento/infografía. Streaming incluido. |
+| [`@infoglitch/react`](packages/react) | Componente `<Infographic/>` y hook `useStreamingInfographic`. |
+| [`@infoglitch/export`](packages/export) | Exporta el SVG a **PNG** y **PDF** en el navegador (sin dependencias). |
+| [`@infoglitch/icons`](packages/icons) | Logos de lenguajes y herramientas (**Simple Icons**, CC0) como fuente de iconos. |
+| [`@infoglitch/fonts`](packages/fonts) | Inter + JetBrains Mono (OFL) embebibles para que PNG/PDF se vean igual en todos lados. |
+
+## Uso rápido (sin IA)
+
+```ts
+import { renderToString } from "@infoglitch/core";
+
+const svg = renderToString({
+  template: "pipeline-steps",
+  theme: "dark-terminal",
+  title: "Pipeline de CI/CD",
+  sections: [
+    { type: "title", text: "De commit a producción", icon: "rocket" },
+    {
+      type: "steps",
+      items: [
+        { label: "Build", desc: "Compila", icon: "package" },
+        { label: "Test", desc: "Suite", icon: "test" },
+        { label: "Deploy", desc: "Prod", icon: "rocket" },
+      ],
+    },
+  ],
+});
+// -> string SVG listo para guardar o inyectar
+```
+
+También podés partir del **DSL textual** (tolerante, ideal para streaming de LLM):
+
+```ts
+import { renderToString } from "@infoglitch/core";
+
+renderToString(`template metrics-grid
+section stat
+  - value 12k
+    label req/s
+  - value 38
+    label latencia
+    unit ms
+`);
+```
+
+## Uso con IA (server-side)
+
+```ts
+import { AnthropicAdapter, generateInfographic } from "@infoglitch/ai";
+
+// ANTHROPIC_API_KEY en el entorno. Correr SOLO en servidor/Node.
+const adapter = new AnthropicAdapter();
+const { doc, svg } = await generateInfographic(adapter, {
+  prompt: "Arquitectura de microservicios de e-commerce",
+});
+```
+
+### Proveedores de IA
+
+Cualquier adapter implementa la misma interfaz `TextModelAdapter`, así que el resto
+del código no cambia según el proveedor:
+
+| Proveedor | Clase | Clave (env) | Modelo por defecto |
+|---|---|---|---|
+| Anthropic (default) | `AnthropicAdapter` | `ANTHROPIC_API_KEY` | `claude-opus-5-5` |
+| OpenAI / ChatGPT | `OpenAIChatAdapter` | `OPENAI_API_KEY` | `gpt-4o-mini` |
+| OpenRouter | `OpenRouterAdapter` | `OPENROUTER_API_KEY` | `openai/gpt-4o-mini` |
+| Google Gemini | `GeminiAdapter` | `GEMINI_API_KEY` | `gemini-2.0-flash` |
+
+OpenRouter y Gemini se hablan por la **API compatible con OpenAI**. Elegí proveedor
+por nombre con `createAdapter`:
+
+```ts
+import { createAdapter, generateInfographic } from "@infoglitch/ai";
+
+const adapter = createAdapter(
+  (process.env.INFOGLITCH_PROVIDER as any) ?? "openrouter",
+  { model: "anthropic/claude-3.5-sonnet" }, // opcional: override de modelo
+);
+const { svg } = await generateInfographic(adapter, { prompt: "Pipeline de CI/CD" });
+```
+
+Cualquier proveedor compatible con OpenAI (Groq, Together, etc.) se usa con
+`OpenAIAdapter` pasándole `baseURL` + `apiKey` + `model`.
+
+#### Restringir modelos en el backend
+
+Dejar que la persona elija el modelo es cómodo, pero en un deploy público conviene
+limitar qué modelos se aceptan. `assertModelAllowed` valida contra una whitelist:
+
+```ts
+import { createAdapter, assertModelAllowed, ModelNotAllowedError } from "@infoglitch/ai";
+
+const WHITELIST = {
+  anthropic: ["claude-opus-5-5", "claude-haiku-5-5"],
+  openai: ["gpt-4o-mini"],
+};
+
+try {
+  // devuelve el modelo normalizado, o undefined si viene vacío (usa el default)
+  const model = assertModelAllowed(req.body.model, WHITELIST, { provider });
+  const adapter = createAdapter(provider, { model });
+} catch (err) {
+  if (err instanceof ModelNotAllowedError) {
+    // err.allowed tiene la lista permitida -> responder 400
+  }
+}
+```
+
+## React
+
+```tsx
+import { Infographic } from "@infoglitch/react";
+
+<Infographic doc={doc} width={960} />;      // desde JSON
+<Infographic source={dslString} />;         // desde DSL (streaming)
+```
+
+## Iconos de lenguajes (logos)
+
+El core trae un set genérico (estilo línea) sin dependencias. Para logos reales de
+lenguajes y herramientas, `@infoglitch/icons` enchufa **Simple Icons** (CC0):
+
+```ts
+import { registerSimpleIcons } from "@infoglitch/icons";
+import { renderToString } from "@infoglitch/core";
+
+registerSimpleIcons();                      // monocromo: heredan el color del tema
+// registerSimpleIcons({ brandColors: true }); // con colores oficiales de marca
+// await registerDevicon();                  // ~90 logos a TODO COLOR (Devicon, incl. Java y C#)
+
+const svg = renderToString({
+  template: "stack-comparison",
+  sections: [
+    { type: "comparison", columns: [
+      { title: "Rust", icon: "rust", points: ["Performance"] },
+      { title: "Go", icon: "go", points: ["Simple"] },
+    ]},
+  ],
+});
+```
+
+- ~110 logos curados (tree-shakeable) con alias (`nodejs`→`nodedotjs`, `k8s`→`kubernetes`,
+  `csharp`→`dotnet`, `golang`→`go`…), **o el set completo** (~3470 logos) con
+  `await registerSimpleIconsAll()` (import dinámico; ideal en server/Node).
+- El motor de iconos es **pluggable**: `registerIconSource(fn, names)` en el core permite
+  enchufar cualquier otra fuente (ej. Devicon).
+- Si registrás esta fuente antes de generar con IA, sus nombres se agregan automáticamente
+  al prompt (vía `iconNames()`), así el modelo referencia los logos correctos.
+
+> Los logos son CC0 (Simple Icons); las marcas pertenecen a sus dueños. El default es
+> monocromo (hereda el color del tema) para evitar problemas de contraste; los colores de
+> marca son opt-in.
+
+## Output consistente (fuentes)
+
+Para que PNG/PDF se vean **idénticos en cualquier máquina** (sin depender de las fuentes
+del sistema), embebé las fuentes con `@infoglitch/fonts`:
+
+```ts
+// Navegador (preview / export con canvas)
+import { fontFaceCss, loadFonts } from "@infoglitch/fonts";
+await loadFonts();                               // registra las fuentes en el documento
+const svg = renderToString(doc, { fontCss: await fontFaceCss() });
+// <Infographic doc={doc} fontCss={await fontFaceCss()} />
+
+// Node (rasterizar con resvg) — resvg NO lee @font-face embebido: pasale los buffers
+import { fontBuffers } from "@infoglitch/fonts";
+import { Resvg } from "@resvg/resvg-js";
+const png = new Resvg(renderToString(doc), {
+  font: { loadSystemFonts: false, fontBuffers: (await fontBuffers()).map(Buffer.from), defaultFontFamily: "Inter" },
+}).render().asPng();
+```
+
+## Exportar a PNG / PDF
+
+En el navegador, `@infoglitch/export` rasteriza el SVG y dispara la descarga:
+
+```ts
+import { renderToString } from "@infoglitch/core";
+import { downloadPng, downloadPdf, svgToPngBlob } from "@infoglitch/export";
+
+const svg = renderToString(doc, { width: 960 });
+
+await downloadPng(svg, "infografia.png", { scale: 2 }); // PNG (lossless)
+await downloadPdf(svg, "infografia.pdf");               // PDF (imagen a página completa)
+
+const blob = await svgToPngBlob(svg); // si preferís manejar el Blob vos
+```
+
+- PNG vía `<canvas>`; PDF **armado a mano** (FlateDecode con `CompressionStream`), sin libs externas.
+- Es **browser-only** (usa `document`/`canvas`). Para exportar en Node, rasterizá el SVG con
+  `@resvg/resvg-js` o `sharp` y pasá los píxeles RGB a `buildPdf(...)` (función pura expuesta por el paquete).
+
+## Plantillas
+
+`pipeline-steps`, `architecture-boxes`, `stack-comparison`, `metrics-grid`,
+`code-callout`, `timeline-roadmap`, `feature-list`, `concept-hero`, `versus`
+(comparación A vs B con columna central y pro/con), `flowchart` (diagrama de flujo
+con decisiones Sí/No), `roadmap` (ruta serpenteante numerada), `icon-grid` (grilla de
+icono + concepto) y `chart` (gráficos). Extensibles con `registerTemplate()`.
+
+Tipos de sección: `title`, `steps`, `comparison`, `stat`, `codeSnippet` (con syntax
+highlighting), `architecture`, `timeline`, `list`, `callout`, `versus`, `flow`, `roadmap`,
+`iconGrid`, `chart` (barras/torta/dona/líneas), y `columns` (layout lado a lado, ej. 50/50).
+
+## Temas
+
+`dark-terminal`, `light-docs`, `glitch`, y los estilo póster **`neon-night`**,
+**`blueprint`** y **`cyber`** (fondo con gradiente, glow neón, acento por sección y
+título con degradé). El tema controla también la paleta de resaltado de código.
+
+## Desarrollo
+
+```bash
+pnpm install
+pnpm build        # compila los 3 paquetes (tsup: ESM + CJS + .d.ts)
+pnpm test         # vitest
+pnpm typecheck
+pnpm lint
+```
+
+Ejemplos: [`examples/node-cli`](examples/node-cli) (JSON → SVG sin IA, ejecutable) y
+[`examples/next-playground`](examples/next-playground) (IA server-side + preview React).
+
+### Galería
+
+`examples/node-cli/build-docs.mjs` genera una **galería de ejemplos** en `docs/index.html`
+(SVG inline + fuentes embebidas, se abre directo en el navegador):
+
+```bash
+pnpm install && pnpm build
+node examples/node-cli/build-docs.mjs   # -> docs/index.html
+```
+
+### Publicación
+
+Monorepo con **pnpm + Turbo + Changesets**, publicación con **npm provenance**. Pasos
+completos (scope `@infoglitch`, login, dry-run, CI) en **[PUBLISHING.md](PUBLISHING.md)**.
+
+## Licencia
+
+MIT
