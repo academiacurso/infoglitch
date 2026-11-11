@@ -1,0 +1,27 @@
+{
+  "name": "infoglitch-next-playground",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Playground Next.js: IA server-side (@infoglitch/ai) + preview con @infoglitch/react",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@infoglitch/ai": "^0.1.0",
+    "@infoglitch/core": "^0.1.0",
+    "@infoglitch/export": "^0.1.0",
+    "@infoglitch/fonts": "^0.1.0",
+    "@infoglitch/icons": "^0.1.0",
+    "@infoglitch/react": "^0.1.0",
+    "next": "^15.1.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.12",
+    "typescript": "^5.7.2"
+  }
+}

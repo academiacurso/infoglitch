@@ -1,0 +1,47 @@
+{
+  "name": "@infoglitch/ai",
+  "version": "0.1.0",
+  "description": "Capa de IA (server-side) de infoglitch: convierte un prompt en un documento/infografía usando el DSL del core. BYO API key.",
+  "license": "MIT",
+  "author": "Duglas Moreno",
+  "repository": { "type": "git", "url": "git+https://github.com/academiacurso/infoglitch.git", "directory": "packages/ai" },
+  "homepage": "https://github.com/academiacurso/infoglitch/tree/master/packages/ai#readme",
+  "bugs": "https://github.com/academiacurso/infoglitch/issues",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "keywords": ["infographic", "ai", "anthropic", "claude", "llm", "infoglitch"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "@infoglitch/core": "workspace:*",
+    "openai": "^4.77.0"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@infoglitch/example-node-cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Ejemplo: genera un SVG desde un documento JSON (sin IA)",
+  "scripts": {
+    "start": "node generate.mjs",
+    "export": "node export.mjs"
+  },
+  "dependencies": {
+    "@infoglitch/core": "workspace:*",
+    "@infoglitch/export": "workspace:*",
+    "@infoglitch/fonts": "workspace:*",
+    "@infoglitch/icons": "workspace:*",
+    "@resvg/resvg-js": "^2.6.2"
+  }
+}
