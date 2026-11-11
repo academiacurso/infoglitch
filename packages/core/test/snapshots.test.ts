@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { renderToString, themes } from "../src/index";
+import { parseDsl, renderToString, stringify, themes } from "../src/index";
 
 /**
  * Snapshots de regresión visual: fijan el SVG generado para cada tipo de sección
@@ -94,6 +94,17 @@ section steps
       expect(svg).toMatchSnapshot();
     });
   }
+
+  it("`accent <color>` inline sobrescribe el acento de la sección", () => {
+    const svg = renderToString(
+      `template stack\ntheme dark-terminal\nsection callout\n  text Hola\n  accent #f5b31e`,
+      { width: WIDTH },
+    );
+    expect(svg).toContain("#f5b31e");
+    // round-trip: stringify preserva el accent
+    const back = stringify(parseDsl(`section kpi\n  value 9\n  accent #abcdef`));
+    expect(back).toContain("accent #abcdef");
+  });
 
   it("una sección ancha (steps) va a ancho completo y no se recorta en columna", () => {
     const svg = renderToString(`template grid\n${doc}`, { theme: "light-docs", width: WIDTH });

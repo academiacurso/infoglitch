@@ -1036,15 +1036,17 @@ function renderTable(s: TableSection, theme: Theme, x: number, y: number, w: num
 function renderProgress(s: ProgressSection, theme: Theme, x: number, y: number, w: number, style: SectionStyle): Block {
   const head = heading(s, x, y, theme, style);
   const top = y + head.height;
+  // Si la sección trae `accent` inline, todas las barras usan ese color;
+  // si no, se reparte la paleta de acentos del tema (una por barra).
+  const hasInline = Boolean((s as { accent?: string }).accent);
   const accents = themeAccents(theme);
   const rowH = 46;
   const barH = 12;
   const unit = s.unit ?? "%";
   let cy = top;
   let parts = head.svg;
-  void style;
   s.items.forEach((it, i) => {
-    const color = accents[i % accents.length]!;
+    const color = hasInline ? style.accent : accents[i % accents.length]!;
     const pct = Math.max(0, Math.min(100, it.value));
     parts += text({ x, y: cy + 14, text: it.label, size: 14, weight: 600, fill: theme.text, family: theme.fontFamily });
     parts += text({
@@ -1072,8 +1074,11 @@ export function renderSection(
   x: number,
   y: number,
   w: number,
-  style: SectionStyle = styleFor(theme),
+  baseStyle: SectionStyle = styleFor(theme),
 ): Block {
+  // Estilo inline por DSL: `accent <color>` sobrescribe el acento de la sección.
+  const inlineAccent = (section as { accent?: string }).accent;
+  const style: SectionStyle = inlineAccent ? { ...baseStyle, accent: inlineAccent } : baseStyle;
   switch (section.type) {
     case "title":
       return renderTitle(section, theme, x, y, w, style);

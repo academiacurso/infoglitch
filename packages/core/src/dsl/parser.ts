@@ -140,6 +140,11 @@ function splitKv(trimmed: string): { key: string; value: string } {
 }
 
 function setSectionField(section: RawSection, key: string, value: string): void {
+  // Estilo inline: `accent <color>` sobrescribe el acento de CUALQUIER sección.
+  if (key === "accent") {
+    if (value) section.accent = value;
+    return;
+  }
   switch (section.type) {
     case "title":
       if (key === "text" || key === "subtitle" || key === "icon") section[key] = value;
@@ -648,6 +653,8 @@ function emitSectionBody(s: Section, p: string): string {
           ]);
         break;
     }
+  const acc = (s as { accent?: string }).accent;
+  if (acc) out += `${p}accent ${acc}\n`;
   return out;
 }
 
