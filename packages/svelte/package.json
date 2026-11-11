@@ -1,10 +1,14 @@
 {
   "name": "@infoglitch/svelte",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Componente Svelte para renderizar infografías de infoglitch",
   "license": "MIT",
   "author": "Duglas Moreno",
-  "repository": { "type": "git", "url": "git+https://github.com/academiacurso/infoglitch.git", "directory": "packages/svelte" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/academiacurso/infoglitch.git",
+    "directory": "packages/svelte"
+  },
   "homepage": "https://github.com/academiacurso/infoglitch/tree/master/packages/svelte#readme",
   "bugs": "https://github.com/academiacurso/infoglitch/issues",
   "type": "module",
@@ -19,8 +23,15 @@
     },
     "./Infographic.svelte": "./src/Infographic.svelte"
   },
-  "files": ["src"],
-  "keywords": ["infographic", "svelte", "svg", "infoglitch"],
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "infographic",
+    "svelte",
+    "svg",
+    "infoglitch"
+  ],
   "dependencies": {
     "@infoglitch/core": "workspace:*"
   },

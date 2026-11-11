@@ -1,10 +1,14 @@
 {
   "name": "@infoglitch/icons",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Logos de lenguajes y herramientas (Simple Icons, CC0) como fuente de iconos para infoglitch.",
   "license": "MIT",
   "author": "Duglas Moreno",
-  "repository": { "type": "git", "url": "git+https://github.com/academiacurso/infoglitch.git", "directory": "packages/icons" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/academiacurso/infoglitch.git",
+    "directory": "packages/icons"
+  },
   "homepage": "https://github.com/academiacurso/infoglitch/tree/master/packages/icons#readme",
   "bugs": "https://github.com/academiacurso/infoglitch/issues",
   "type": "module",

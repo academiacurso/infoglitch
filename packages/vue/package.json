@@ -1,10 +1,14 @@
 {
   "name": "@infoglitch/vue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Componente Vue 3 para renderizar infografías de infoglitch",
   "license": "MIT",
   "author": "Duglas Moreno",
-  "repository": { "type": "git", "url": "git+https://github.com/academiacurso/infoglitch.git", "directory": "packages/vue" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/academiacurso/infoglitch.git",
+    "directory": "packages/vue"
+  },
   "homepage": "https://github.com/academiacurso/infoglitch/tree/master/packages/vue#readme",
   "bugs": "https://github.com/academiacurso/infoglitch/issues",
   "type": "module",
@@ -19,8 +23,15 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
-  "keywords": ["infographic", "vue", "svg", "infoglitch"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "infographic",
+    "vue",
+    "svg",
+    "infoglitch"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
