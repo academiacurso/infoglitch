@@ -150,3 +150,6 @@ vite.config.ts.timestamp-*
 
 # docs generadas (build-docs.mjs)
 docs/
+
+# bundle standalone generado (tsup.standalone.config)
+standalone/
