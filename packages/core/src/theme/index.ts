@@ -188,6 +188,120 @@ export const cyber: Theme = {
   code: neonCode,
 };
 
+/* ---------------------------- temas adicionales ------------------------- */
+
+/** Verde bosque + dorado (marca duglasm.com). Elegante, cálido, sobrio. */
+export const forest: Theme = {
+  id: "forest",
+  background: "#0b1710",
+  surface: "#10231a",
+  surfaceAlt: "#16301f",
+  text: "#eaf5ec",
+  textMuted: "#9cc0a8",
+  accent: "#4e8c56",
+  accent2: "#f5b31e",
+  border: "#1c3a28",
+  fontFamily: SANS,
+  monoFamily: MONO,
+  radius: 12,
+  accents: ["#4e8c56", "#f5b31e", "#7bc67e", "#2d5a34", "#d9a441"],
+  backgroundGradient: { type: "linear", from: "#123120", to: "#07140d", angle: 150 },
+  panelStyle: "flat",
+  titleGradient: ["#7bc67e", "#4e8c56"],
+  glow: false,
+  code: { ...darkCode, keyword: "#f5b31e", string: "#a7e0b0", fn: "#7bc67e" },
+};
+
+/** Oscuro cálido con glow coral/ámbar (estilo "atardecer"). */
+export const sunset: Theme = {
+  id: "sunset",
+  background: "#160d14",
+  surface: "#231320",
+  surfaceAlt: "#30182a",
+  text: "#ffeef2",
+  textMuted: "#d2a3b4",
+  accent: "#ff6b6b",
+  accent2: "#ffb454",
+  border: "#3d2130",
+  fontFamily: SANS,
+  monoFamily: MONO,
+  radius: 14,
+  accents: ["#ff6b6b", "#ffb454", "#ff8cc6", "#c792ea", "#ffd166"],
+  backgroundGradient: { type: "radial", from: "#2a1526", to: "#0f0810" },
+  panelStyle: "neon",
+  titleGradient: ["#ff8cc6", "#ffb454"],
+  glow: true,
+  code: neonCode,
+};
+
+/** Claro minimalista, papel cálido + bloque de código oscuro. Ideal docs/print. */
+export const paper: Theme = {
+  id: "paper",
+  background: "#faf7f2",
+  surface: "#f1ece3",
+  surfaceAlt: "#e7e0d4",
+  text: "#2b2622",
+  textMuted: "#7a7163",
+  accent: "#b45309",
+  accent2: "#3f7d5a",
+  border: "#ddd4c6",
+  fontFamily: SANS,
+  monoFamily: MONO,
+  radius: 8,
+  accents: ["#b45309", "#3f7d5a", "#8a6d3b", "#9a3412", "#5b6670"],
+  code: { ...darkCode, bg: "#2b2622" },
+};
+
+/** Frío nórdico (slate azulado), paneles planos. Serio y legible. */
+export const frost: Theme = {
+  id: "frost",
+  background: "#2e3440",
+  surface: "#3b4252",
+  surfaceAlt: "#434c5e",
+  text: "#eceff4",
+  textMuted: "#aeb7c6",
+  accent: "#88c0d0",
+  accent2: "#a3be8c",
+  border: "#4c566a",
+  fontFamily: SANS,
+  monoFamily: MONO,
+  radius: 10,
+  accents: ["#88c0d0", "#a3be8c", "#81a1c1", "#b48ead", "#ebcb8b"],
+  backgroundGradient: { type: "linear", from: "#3b4252", to: "#2e3440", angle: 160 },
+  panelStyle: "flat",
+  titleGradient: ["#8fbcbb", "#88c0d0"],
+  glow: false,
+  code: {
+    bg: "#242933", text: "#d8dee9", keyword: "#81a1c1", string: "#a3be8c",
+    comment: "#616e88", number: "#b48ead", fn: "#88c0d0", punct: "#eceff4",
+  },
+};
+
+/** Base teal profunda con acentos cálidos (inspirado en solarized). */
+export const solar: Theme = {
+  id: "solar",
+  background: "#002b36",
+  surface: "#073642",
+  surfaceAlt: "#0a4452",
+  text: "#eee8d5",
+  textMuted: "#93a1a1",
+  accent: "#268bd2",
+  accent2: "#b58900",
+  border: "#0f4a59",
+  fontFamily: SANS,
+  monoFamily: MONO,
+  radius: 10,
+  accents: ["#268bd2", "#b58900", "#2aa198", "#859900", "#d33682", "#cb4b16"],
+  backgroundGradient: { type: "radial", from: "#073642", to: "#00212b" },
+  panelStyle: "flat",
+  titleGradient: ["#2aa198", "#268bd2"],
+  glow: false,
+  code: {
+    bg: "#00212b", text: "#93a1a1", keyword: "#859900", string: "#2aa198",
+    comment: "#586e75", number: "#d33682", fn: "#268bd2", punct: "#eee8d5",
+  },
+};
+
 export const themes: Record<string, Theme> = {
   [darkTerminal.id]: darkTerminal,
   [lightDocs.id]: lightDocs,
@@ -195,6 +309,11 @@ export const themes: Record<string, Theme> = {
   [neonNight.id]: neonNight,
   [blueprint.id]: blueprint,
   [cyber.id]: cyber,
+  [forest.id]: forest,
+  [sunset.id]: sunset,
+  [paper.id]: paper,
+  [frost.id]: frost,
+  [solar.id]: solar,
 };
 
 export const defaultThemeId = darkTerminal.id;
