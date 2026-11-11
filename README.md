@@ -9,7 +9,7 @@ Framework para **generar y renderizar infografías del ámbito de la programaci�
 IA opcional. Inspirado en `@antv/infographic`, pero enfocado en temática dev (pipelines,
 arquitecturas, benchmarks, comparativas de stacks, roadmaps, snippets…).
 
-**19 tipos de sección · 17 plantillas de layout · 11 temas · exporta a SVG/PNG/PDF · CLI · React/Vue/Svelte.**
+**19 tipos de sección · 17 plantillas de layout · 11 temas · exporta a SVG/PNG/PDF · CLI · servidor MCP · React/Vue/Svelte.**
 
 > El **JSON es la fuente de verdad** y genera el SVG por sí solo. La IA es un productor
 > **opcional** de ese JSON.
@@ -26,6 +26,7 @@ arquitecturas, benchmarks, comparativas de stacks, roadmaps, snippets…).
 | [`@infoglitch/core`](packages/core) | Modelo de documento (zod), DSL textual tolerante, renderer SVG, plantillas, temas (`defineTheme`/`registerTheme`) e iconos. Sin dependencias de IA ni de red. |
 | [`@infoglitch/ai`](packages/ai) | Adapter de Anthropic (server-side, BYO key): prompt → documento/infografía. Streaming incluido. |
 | [`@infoglitch/cli`](packages/cli) | **CLI**: `npx @infoglitch/cli render deck.dsl -o out.png`. Renderiza DSL/JSON a SVG/PNG/PDF desde la terminal. |
+| [`@infoglitch/mcp`](packages/mcp) | **Servidor MCP**: generá/renderizá infografías desde Claude Desktop, IDEs o agentes (tools `render_infographic`, `generate_infographic`, discovery). |
 | [`@infoglitch/react`](packages/react) | Componente `<Infographic/>` y hook `useStreamingInfographic`. |
 | [`@infoglitch/vue`](packages/vue) | Componente Vue 3 `<Infographic/>` y composable `useStreamingInfographic`. |
 | [`@infoglitch/svelte`](packages/svelte) | Componente Svelte `<Infographic/>` (compatible 4 y 5). |
