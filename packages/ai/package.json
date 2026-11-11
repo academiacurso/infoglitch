@@ -1,10 +1,14 @@
 {
   "name": "@infoglitch/ai",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Capa de IA (server-side) de infoglitch: convierte un prompt en un documento/infografía usando el DSL del core. BYO API key.",
   "license": "MIT",
   "author": "Duglas Moreno",
-  "repository": { "type": "git", "url": "git+https://github.com/academiacurso/infoglitch.git", "directory": "packages/ai" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/academiacurso/infoglitch.git",
+    "directory": "packages/ai"
+  },
   "homepage": "https://github.com/academiacurso/infoglitch/tree/master/packages/ai#readme",
   "bugs": "https://github.com/academiacurso/infoglitch/issues",
   "type": "module",
@@ -19,8 +23,17 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
-  "keywords": ["infographic", "ai", "anthropic", "claude", "llm", "infoglitch"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "infographic",
+    "ai",
+    "anthropic",
+    "claude",
+    "llm",
+    "infoglitch"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

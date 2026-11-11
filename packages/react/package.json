@@ -1,10 +1,14 @@
 {
   "name": "@infoglitch/react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Componente React para renderizar infografías de infoglitch",
   "license": "MIT",
   "author": "Duglas Moreno",
-  "repository": { "type": "git", "url": "git+https://github.com/academiacurso/infoglitch.git", "directory": "packages/react" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/academiacurso/infoglitch.git",
+    "directory": "packages/react"
+  },
   "homepage": "https://github.com/academiacurso/infoglitch/tree/master/packages/react#readme",
   "bugs": "https://github.com/academiacurso/infoglitch/issues",
   "type": "module",
@@ -19,8 +23,15 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
-  "keywords": ["infographic", "react", "svg", "infoglitch"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "infographic",
+    "react",
+    "svg",
+    "infoglitch"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

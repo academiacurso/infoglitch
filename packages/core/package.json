@@ -1,10 +1,14 @@
 {
   "name": "@infoglitch/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Núcleo de infoglitch: modelo de documento, DSL tolerante, renderer SVG, temas e iconos para infografías de programación",
   "license": "MIT",
   "author": "Duglas Moreno",
-  "repository": { "type": "git", "url": "git+https://github.com/academiacurso/infoglitch.git", "directory": "packages/core" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/academiacurso/infoglitch.git",
+    "directory": "packages/core"
+  },
   "homepage": "https://github.com/academiacurso/infoglitch/tree/master/packages/core#readme",
   "bugs": "https://github.com/academiacurso/infoglitch/issues",
   "type": "module",
@@ -19,8 +23,17 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
-  "keywords": ["infographic", "svg", "visualization", "ai", "programming", "infoglitch"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "infographic",
+    "svg",
+    "visualization",
+    "ai",
+    "programming",
+    "infoglitch"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
