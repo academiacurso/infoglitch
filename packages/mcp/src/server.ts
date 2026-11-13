@@ -7,7 +7,9 @@
  *   - generate_infographic prompt → infografía (requiere API key en el entorno)
  *   - list_themes / list_templates / list_sections / dsl_reference  (discovery)
  */
+import { mkdir, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
+import { dirname, extname, resolve } from "node:path";
 import { argv } from "node:process";
 import { pathToFileURL } from "node:url";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -115,6 +117,56 @@ export function createServer(): McpServer {
       const png = await node.renderPng(svg, { fontBuffers: await fontBuffers(), width, background });
       const data = Buffer.from(png).toString("base64");
       return { content: [{ type: "image" as const, data, mimeType: "image/png" }] };
+    },
+  );
+
+  server.registerTool(
+    "save_infographic",
+    {
+      title: "Guardar infografía en disco",
+      description:
+        "Renderiza un documento de infoglitch (DSL textual o JSON) y lo escribe a un archivo. " +
+        "El formato se infiere de la extensión (.svg/.png/.pdf) salvo que se indique 'format'. " +
+        "Crea los directorios padre si no existen.",
+      inputSchema: {
+        source: z.string().describe("DSL textual o JSON de infoglitch (InfographicDoc)."),
+        path: z.string().describe("Ruta del archivo de salida (ej. './docs/ci.svg'). Relativa al cwd del server."),
+        theme: z.string().optional().describe("Id de tema (override del doc)."),
+        width: z.number().optional().describe("Ancho del lienzo en px (default 960)."),
+        format: z.enum(["svg", "png", "pdf"]).optional().describe("Formato de salida; por defecto, el de la extensión."),
+        background: z.string().optional().describe("Color de fondo para PNG/PDF (ej. '#ffffff')."),
+      },
+    },
+    async ({ source, path, theme, width, format, background }) => {
+      await ensureIcons();
+      const ext = extname(path).toLowerCase();
+      const fmt = format ?? (ext === ".png" ? "png" : ext === ".pdf" ? "pdf" : "svg");
+
+      const fontCss = await fontFaceCss();
+      const svg = renderToString(source, { theme, width, fontCss });
+
+      let bytes: Uint8Array | string = svg;
+      if (fmt !== "svg") {
+        let node: typeof import("@infoglitch/export/node");
+        try {
+          node = await import("@infoglitch/export/node");
+        } catch {
+          return {
+            content: [{ type: "text" as const, text: `Para ${fmt.toUpperCase()} hace falta '@resvg/resvg-js' (dependencia opcional).` }],
+            isError: true,
+          };
+        }
+        const fonts = await fontBuffers();
+        bytes = fmt === "pdf"
+          ? await node.renderPdf(svg, { fontBuffers: fonts, width, background })
+          : await node.renderPng(svg, { fontBuffers: fonts, width, background });
+      }
+
+      const abs = resolve(path);
+      await mkdir(dirname(abs), { recursive: true });
+      const buf = typeof bytes === "string" ? Buffer.from(bytes, "utf8") : Buffer.from(bytes);
+      await writeFile(abs, buf);
+      return textResult(`Guardado ${fmt.toUpperCase()} en ${abs} (${buf.length} bytes).`);
     },
   );
 

@@ -10,6 +10,7 @@ IDEs o cualquier agente compatible: *"pedíselo a Claude y te arma el SVG"*.
 | Tool | Qué hace |
 |---|---|
 | `render_infographic` | Renderiza un DSL/JSON de infoglitch a **SVG** o **PNG**. |
+| `save_infographic` | Renderiza y **escribe el archivo a disco** (`.svg`/`.png`/`.pdf`, según la extensión). |
 | `generate_infographic` | **Prompt → infografía** con IA (requiere API key en el entorno). |
 | `list_themes` / `list_templates` / `list_sections` | Discovery de ids disponibles. |
 | `dsl_reference` | Sintaxis del DSL con un ejemplo (para que el modelo sepa escribirlo). |
